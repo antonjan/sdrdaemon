@@ -148,9 +148,6 @@ AirspySource::AirspySource(int dev_index) :
 
     m_vgainsStr = vgains_ostr.str();
 
-    std::ostringstream bwfilt_ostr;
-    bwfilt_ostr << std::fixed << std::setprecision(2);
-
     m_this = this;
 }
 
