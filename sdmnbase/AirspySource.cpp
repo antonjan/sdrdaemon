@@ -2,6 +2,7 @@
 // SDRdaemon - send I/Q samples read from a SDR device over the network via UDP. //
 //                                                                               //
 // Copyright (C) 2015 Edouard Griffiths, F4EXB                                   //
+// Copyright (C) 2018 Jared Boone, AF7SO                                         //
 //                                                                               //
 // This program is free software; you can redistribute it and/or modify          //
 // it under the terms of the GNU General Public License as published by          //
@@ -624,7 +625,7 @@ bool AirspySource::configure(parsekv::pairs_type& m)
 
 	if (m.find("decim") != m.end())
 	{
-		std::cerr << "HackRFSource::configure: decim: " << m["decim"] << std::endl;
+		std::cerr << "AirspySource::configure: decim: " << m["decim"] << std::endl;
 		int log2Decim = atoi(m["decim"].c_str());
 
 		if ((log2Decim < 0) || (log2Decim > 6))
