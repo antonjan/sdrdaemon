@@ -8,6 +8,7 @@
 // support.                                                                      //
 //                                                                               //
 // Copyright (C) 2016 Edouard Griffiths, F4EXB                                   //
+// Copyright (C) 2018 Jared Boone, AF7SO                                         //
 //                                                                               //
 // This program is free software; you can redistribute it and/or modify          //
 // it under the terms of the GNU General Public License as published by          //
@@ -49,6 +50,9 @@
 #endif
 #ifdef HAS_AIRSPY
     #include "AirspySource.h"
+#endif
+#ifdef HAS_AIRSPYHF
+    #include "AirspyHFSource.h"
 #endif
 #ifdef HAS_BLADERF
     #include "BladeRFSource.h"
@@ -285,6 +289,13 @@ static bool get_device(std::vector<std::string> &devnames, std::string& devtype,
         deviceDefined = true;
     }
 #endif
+#ifdef HAS_AIRSPYHF
+    if (strcasecmp(devtype.c_str(), "airspyhf") == 0)
+    {
+        AirspyHFSource::get_device_names(devnames);
+        deviceDefined = true;
+    }
+#endif
 #ifdef HAS_BLADERF
     if (strcasecmp(devtype.c_str(), "bladerf") == 0)
     {
@@ -355,6 +366,13 @@ static bool get_device(std::vector<std::string> &devnames, std::string& devtype,
     {
         // Open Airspy device.
         *srcsdr = new AirspySource(devidx);
+    }
+#endif
+#ifdef HAS_AIRSPYHF
+    if (strcasecmp(devtype.c_str(), "airspyhf") == 0)
+    {
+        // Open AirspyHF device.
+        *srcsdr = new AirspyHFSource(devidx);
     }
 #endif
 #ifdef HAS_BLADERF

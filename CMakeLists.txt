@@ -112,6 +112,20 @@ else(LIBAIRSPY_INCLUDE_DIR AND LIBAIRSPY_LIBRARIES)
     message(STATUS "libairspy not found")
 endif(LIBAIRSPY_INCLUDE_DIR AND LIBAIRSPY_LIBRARIES)
 
+# Find AirspyHF library.
+pkg_check_modules(PKG_AIRSPYHF libairspyhf)
+find_path(LIBAIRSPYHF_INCLUDE_DIR airspyhf.h
+          HINT ${PKG_LIBAIRSPYHF_INCLUDE_DIR})
+find_library(LIBAIRSPYHF_LIBRARIES libairspyhf.so
+          HINT ${PKG_LIBAIRSPYHF_LIBRARIES_DIRS})
+if(LIBAIRSPYHF_INCLUDE_DIR AND LIBAIRSPYHF_LIBRARIES)
+    set(LIBAIRSPYHF_FOUND TRUE CACHE INTERNAL "libairspyhf found")
+    message(STATUS "Found libairspyhf: ${LIBAIRSPYHF_INCLUDE_DIR}, ${LIBAIRSPYHF_LIBRARIES}")
+else(LIBAIRSPYHF_INCLUDE_DIR AND LIBAIRSPYHF_LIBRARIES)
+    set(LIBAIRSPYHF_FOUND FALSE CACHE INTERNAL "libairspyhf found")
+    message(STATUS "libairspyhf not found")
+endif(LIBAIRSPYHF_INCLUDE_DIR AND LIBAIRSPYHF_LIBRARIES)
+
 # Find BladeRF library.
 pkg_check_modules(PKG_BLADERF libbladerf)
 find_path(LIBBLADERF_INCLUDE_DIR libbladeRF.h
@@ -250,6 +264,7 @@ set(sdmndevicerx_SOURCES
     sdmnbase/TestSource.cpp
     sdmnbase/RtlSdrSource.cpp
     sdmnbase/AirspySource.cpp
+    sdmnbase/AirspyHFSource.cpp
     sdmnbase/BladeRFSource.cpp
     sdmnbase/HackRFSource.cpp
 )
@@ -258,6 +273,7 @@ set(sdmndevicerx_HEADERS
     include/TestSource.h
     include/RtlSdrSource.h
     include/AirspySource.h
+    include/AirspyHFSource.h
     include/BladeRFSource.h
     include/HackRFSource.h
 )
@@ -459,6 +475,32 @@ if(LIBUSB_FOUND AND LIBAIRSPY_FOUND)
     set(DEVICE_TARGETS ${DEVICE_TARGETS} sdmnairspy)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAS_AIRSPY")
 endif(LIBUSB_FOUND AND LIBAIRSPY_FOUND)
+
+if(LIBUSB_FOUND AND LIBAIRSPYHF_FOUND)
+    set(sdmnairspyhf_SOURCES
+        sdmnbase/AirspyHFSource.cpp
+    )
+
+    set(sdmnairspyhf_HEADERS
+        include/AirspyHFSource.h
+    )
+
+    add_library(sdmnairspyhf STATIC
+        ${sdmnairspyhf_SOURCES}
+    )
+
+    target_include_directories(sdmnairspyhf PUBLIC
+        ${LIBAIRSPYHF_INCLUDE_DIRS}
+    )
+
+    target_link_libraries(sdmnairspyhf
+        ${LIBAIRSPYHF_LIBRARIES}
+    )
+
+    set(DEVICE_LIBRARIES ${DEVICE_LIBRARIES} sdmnairspyhf)
+    set(DEVICE_TARGETS ${DEVICE_TARGETS} sdmnairspyhf)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAS_AIRSPYHF")
+endif(LIBUSB_FOUND AND LIBAIRSPYHF_FOUND)
 
 if(LIBUSB_FOUND AND LIBBLADERF_FOUND)
     set(sdmnbladerf_SOURCES
